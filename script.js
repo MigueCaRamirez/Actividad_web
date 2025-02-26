@@ -1,7 +1,6 @@
 document.getElementById("registroForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
-    // Obtener los valores del formulario
     const nombre = document.getElementById("nombre").value;
     const celular = document.getElementById("celular").value;
     const correo = document.getElementById("correo").value;
@@ -9,14 +8,16 @@ document.getElementById("registroForm").addEventListener("submit", function(even
     const edad = document.getElementById("edad").value;
     const sexo = document.getElementById("sexo").value;
     const imagen = document.getElementById("imagen").files[0];
+    const color = document.getElementById("color").value;
+    const estadoCivil = document.querySelector('input[name="estadoCivil"]:checked')?.value;
 
-    // Validar campos vacíos
-    if (!nombre || !celular || !correo || !direccion || !edad || !sexo || !imagen) {
+   
+
+    if (!nombre || !celular || !correo || !direccion || !edad || !sexo || !imagen || !color || !estadoCivil) {
         alert("Por favor, complete todos los campos.");
         return;
     }
 
-    // Crear URL de la imagen
     const reader = new FileReader();
     reader.onload = function(event) {
         const imagenURL = event.target.result;
@@ -27,18 +28,16 @@ document.getElementById("registroForm").addEventListener("submit", function(even
             direccion,
             edad,
             sexo,
-            imagen: imagenURL
+            estadoCivil,
+            imagen: imagenURL,
+            color
         };
 
-        // Guardar en LocalStorage
         let registros = JSON.parse(localStorage.getItem("registros")) || [];
         registros.push(registro);
         localStorage.setItem("registros", JSON.stringify(registros));
 
-        // Actualizar tabla
         actualizarTabla();
-
-        // Limpiar formulario
         document.getElementById("registroForm").reset();
     };
     reader.readAsDataURL(imagen);
@@ -59,7 +58,9 @@ function actualizarTabla() {
             <td>${registro.direccion}</td>
             <td>${registro.edad}</td>
             <td>${registro.sexo}</td>
+            <td>${registro.estadoCivil}</td>
             <td><img src="${registro.imagen}" alt="Imagen" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;"></td>
+            <td><input type="color" value="${registro.color}" disabled></td>
             <td><button class="btn btn-danger btn-sm" onclick="eliminarRegistro(${index})">Eliminar</button></td>
         `;
         tabla.appendChild(fila);
@@ -68,10 +69,10 @@ function actualizarTabla() {
 
 function eliminarRegistro(index) {
     let registros = JSON.parse(localStorage.getItem("registros")) || [];
-    registros.splice(index, 1);  // Eliminar registro por índice
+    registros.splice(index, 1);
     localStorage.setItem("registros", JSON.stringify(registros));
-    actualizarTabla();  // Actualizar tabla
+    actualizarTabla();
 }
 
-// Cargar datos al iniciar
+// Cargar datos al cargar la página
 window.onload = actualizarTabla;
